@@ -59,7 +59,7 @@ def data():
     personal_client = spotipy.Spotify(auth='BQDJ_B0q8yzcHfpFWLQjlI8ZVTreeaM3LIetawcg5czMV3z7sX17ts-bgECuudXm3Y2uog57iluGNyYJZ6mk2bqyc8Bd9jFJ87cd6m8ZazF9_dzP2AhGtC5hA7nFjSA9VrwscCxzYZ5g4cjVN_vDXNDyJVIzxhkPiMTA1FrU6plUgyqVlTR5tOqj_xWb9Y7hMdWIlyy_wGDsDlMbIO7-HDCZZx9u7EGf7r4sDRVKg_Ic8pd-bPisOhTg-HTsmFi8WJ7Gofhx_-A')
     playlist = personal_client.user_playlist_create('duylam.nguyen','tiptone playlist')
     playlist_tracks = personal_client.user_playlist_add_tracks(user='duylam.nguyen', playlist_id=playlist['id'], tracks=recommendations_ids, position=None)
-    return jsonify({'status':'ok'})
+    return jsonify({'status':'ok','id':playlist['id']})
 
 @app.route('/auth/sp/login')
 def auth_sp_login():

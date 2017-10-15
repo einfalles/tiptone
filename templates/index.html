@@ -21,6 +21,9 @@
     <a id='submit-song' style="display:none;" class='primary button blue-medium show' href="">
       <button>Submit</button>
     </a>
+    <a id='again' style="display:none;" class='primary button blue-medium show' href="/">
+      <button>again</button>
+    </a>
   </form>
 <div id="ThreeJS"></div>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
@@ -42,6 +45,7 @@ $(document).ready(function(){
     transmission.push(data);
     $('#check-song').css('display','none');
     $('#submit-song').css('display','block');
+    $('#again').css('display','block');
     $('form')[0].reset();
   });
   $('#submit-song').on('click',function(event){
@@ -61,7 +65,7 @@ $(document).ready(function(){
       },
       method: 'POST',
       success: function (response) {
-          console.log(response)
+          window.open('https://open.spotify.com/user/duylam.nguyen/playlist/'+response['id']);
       }
     }); // end ajax
   });
@@ -176,7 +180,7 @@ function init()
 	var floor = new THREE.Mesh(floorGeometry, floorMaterial);
 	floor.position.y = -0.5;
 	floor.rotation.x = Math.PI / 2;
-	scene.add(floor);
+	// scene.add(floor);
 	// SKYBOX/FOG
 	var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
 	var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
@@ -272,7 +276,6 @@ function update()
 
   if ( keyboard.pressed("w") )
   {
-    console.log("W");
     var darkMaterial = new THREE.MeshBasicMaterial( { color: Math.random() * 0xffffff } );
   	var wireframeMaterial = new THREE.MeshBasicMaterial( { color: "white" * 0xffffff, wireframe: true, transparent: true } );
   	var multiMaterial = [ darkMaterial, wireframeMaterial ];
@@ -286,7 +289,6 @@ function update()
 
     if ( keyboard.pressed("e") )
     {
-      console.log("E");
       var darkMaterial = new THREE.MeshBasicMaterial( { color: Math.random() * 0xffffff } );
     	var wireframeMaterial = new THREE.MeshBasicMaterial( { color: "white" * 0xffffff, wireframe: true, transparent: true } );
     	var multiMaterial = [ darkMaterial, wireframeMaterial ];
