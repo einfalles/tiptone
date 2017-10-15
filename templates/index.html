@@ -11,7 +11,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
     <link rel="stylesheet" href="/css/main.css">
 </head>
-<body>
+<body style="display:flex;justify-content:center;align-items:center;">
+  <form class="" style="position: absolute;">
+    <input type='text' value="" placeholder="Artist?" name='artist'></input>
+    <input type='text' value="" placeholder="Track" name='track'></input>
+    <a id='check-song' class='primary button blue-medium show' href="">
+      <button>Player 2</button>
+    </a>
+    <a id='submit-song' style="display:none;" class='primary button blue-medium show' href="">
+      <button>Submit</button>
+    </a>
+  </form>
 <div id="ThreeJS"></div>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.min.js" crossorigin="anonymous"></script>
@@ -19,10 +29,44 @@
 <script src="https://stemkoski.github.io/Three.js/js/Detector.js"></script>
 <script src="https://stemkoski.github.io/Three.js/js/Stats.js"></script>
 <script src="https://stemkoski.github.io/Three.js/js/THREEx.WindowResize.js"></script>
-<script src="https://stemkoski.github.io/Three.js/js/THREEx.FullScreen.js"></script>
+<!-- <script src="https://stemkoski.github.io/Three.js/js/THREEx.FullScreen.js"></script> -->
 <script src="https://stemkoski.github.io/Three.js/js/THREEx.KeyboardState.js"></script>
 <script src="https://stemkoski.github.io/Three.js/js/OrbitControls.js"></script>
 <script src="/js/main.js"></script>
+<script>
+$(document).ready(function(){
+  var transmission = [];
+  $('#check-song').on('click',function(event){
+    event.preventDefault();
+    var data = $('form').serializeArray();
+    transmission.push(data);
+    $('#check-song').css('display','none');
+    $('#submit-song').css('display','block');
+    $('form')[0].reset();
+  });
+  $('#submit-song').on('click',function(event){
+    event.preventDefault();
+    var data = $('form').serializeArray();
+    transmission.push(data);
+    console.log(transmission)
+    $.ajax({
+      async: true,
+      contentType:"application/json",
+      url: '/data',
+      dataType: 'json',
+      data: JSON.stringify(transmission),
+      error: function(){
+        alert("Hmm. Something didn't work. Could you try again?");
+        // location.href = '/';
+      },
+      method: 'POST',
+      success: function (response) {
+          console.log(response)
+      }
+    }); // end ajax
+  });
+});
+</script>
 <script>
 var keyData = {
   q: { sound: new Howl({src:['/sounds/bubbles.mp3']}) },
@@ -110,7 +154,7 @@ function init()
 	container.appendChild( renderer.domElement );
 	// EVENTS
 	THREEx.WindowResize(renderer, camera);
-	THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
+	// THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
 	// CONTROLS
 	controls = new THREE.OrbitControls( camera, renderer.domElement );
 	// STATS
