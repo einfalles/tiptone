@@ -7,8 +7,8 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 604800
 
 @app.route('/')
 def index():
-    # 
-    return "hello"
+    #
+    return render_template('index.html')
 
 
 if __name__ == "__main__":
