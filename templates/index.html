@@ -12,11 +12,11 @@
     <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
-  <p>Hello world! This is HTML5 Boilerplate.</p>
-  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.min.js" crossorigin="anonymous"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.5/howler.min.js"></script>
-  <script src="/js/main.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/87/three.min.js" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.5/howler.min.js"></script>
+<script src="/js/main.js"></script>
 <script>
 var keyData = {
   q: { sound: new Howl({src:['/sounds/bubbles.mp3']}) },
@@ -63,7 +63,62 @@ document.body.onkeydown = function(event){
   keyData[event.key].sound.play();
   }
 }
+</script>
+<script id="threejs">
+var camera_data = {
+  'field of view': 75,
+  'aspect ratio': window.innerWidth / window.innerHeight,
+  'near clipping plane': 0.1,
+  'far clipping plane': 1000
+}
+var renderer_data = {
+  'width': window.innerWidth,
+  'height': window.innerHeight
+}
+var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera(camera_data['field of view'],camera_data['aspect ratio'],camera_data['near clipping plane'],camera_data['far clipping plane']);
+var renderer = new THREE.WebGLRenderer();
+renderer.setSize(renderer_data['width'],renderer_data['height']);
+renderer.shadowMapEnabled = true;
+document.body.appendChild(renderer.domElement);
 
+var light = new THREE.AmbientLight("#fff");
+scene.add(light);
+
+camera.position.z = 5;
+
+animate();
+
+function animate() {
+	requestAnimationFrame( animate );
+
+	renderer.render( scene, camera );
+}
+var keyData = {
+  q: "cube1",
+  a: "cube2"
+}
+document.body.onkeydown = function(event){
+  console.log(event);
+  if(keyData[event.key]){
+    var scene_object = keyData[event.key];
+    if (scene_object == "cube1") {
+      var geometry = new THREE.BoxGeometry( 1, .5, 1 );
+      var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+      var cube = new THREE.Mesh( geometry, material );
+      scene.add( cube );
+      animate();
+    }
+    if (scene_object == "cube2") {
+      var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+      var material = new THREE.MeshBasicMaterial( { color:"red" } );
+      var cube = new THREE.Mesh( geometry, material );
+      cube.position.set(.5, 2, .5);
+      scene.add( cube );
+      animate();
+    }
+  }
+}
 </script>
 </body>
 </html>
