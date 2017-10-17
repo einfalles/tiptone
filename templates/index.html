@@ -11,18 +11,40 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
     <link rel="stylesheet" href="/css/main.css">
 </head>
+<style>
+form {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+button, input {
+  background-color: rgba(0,0,0,0);
+      color: white;
+      padding: 20px;
+      margin:0 10px;
+      box-sizing: border-box;
+}
+#again {
+  background-color: lightblue;
+}
+button {
+  background-color: pink;
+  color:black;
+}
+</style>
 <body style="display:flex;justify-content:center;align-items:center;">
   <form class="" style="position: absolute;">
     <input type='text' value="" placeholder="Artist?" name='artist'></input>
     <input type='text' value="" placeholder="Track" name='track'></input>
     <a id='check-song' class='primary button blue-medium show' href="">
-      <button>Player 2</button>
+      <button>Next Track</button>
     </a>
     <a id='submit-song' style="display:none;" class='primary button blue-medium show' href="">
       <button>Submit</button>
     </a>
     <a id='again' style="display:none;" class='primary button blue-medium show' href="/">
-      <button>again</button>
+      <button>Do It Again</button>
     </a>
   </form>
 <div id="ThreeJS"></div>
@@ -45,7 +67,6 @@ $(document).ready(function(){
     transmission.push(data);
     $('#check-song').css('display','none');
     $('#submit-song').css('display','block');
-    $('#again').css('display','block');
     $('form')[0].reset();
   });
   $('#submit-song').on('click',function(event){
@@ -65,6 +86,8 @@ $(document).ready(function(){
       },
       method: 'POST',
       success: function (response) {
+        $('#submit-song').css('display','none');
+        $('#again').css('display','block');
           window.open('https://open.spotify.com/user/duylam.nguyen/playlist/'+response['id']);
       }
     }); // end ajax

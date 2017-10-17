@@ -23,7 +23,7 @@ SPOTIFY_INFO = {
 @app.route('/')
 def index():
     session.permanent = True
-    pprint.pprint(session)
+    pprint.pprint(session['user']['access_token'])
     return render_template('index.html')
 
 @app.route('/data', methods=['POST'])
@@ -52,12 +52,11 @@ def data():
     audio = spotify_client.audio_features(tracks=[data_one['sp_uri'],data_two['sp_uri']])
     recommendations = spotify_client.recommendations(seed_tracks=[data_one['sp_uri'],data_two['sp_uri']],limit=12)
     recommendations = recommendations['tracks']
-    pprint.pprint(recommendations)
     recommendations_ids = []
     for i in recommendations:
         recommendations_ids.append(i['id'])
-    personal_client = spotipy.Spotify(auth='BQDJ_B0q8yzcHfpFWLQjlI8ZVTreeaM3LIetawcg5czMV3z7sX17ts-bgECuudXm3Y2uog57iluGNyYJZ6mk2bqyc8Bd9jFJ87cd6m8ZazF9_dzP2AhGtC5hA7nFjSA9VrwscCxzYZ5g4cjVN_vDXNDyJVIzxhkPiMTA1FrU6plUgyqVlTR5tOqj_xWb9Y7hMdWIlyy_wGDsDlMbIO7-HDCZZx9u7EGf7r4sDRVKg_Ic8pd-bPisOhTg-HTsmFi8WJ7Gofhx_-A')
-    playlist = personal_client.user_playlist_create('duylam.nguyen','tiptone playlist')
+    personal_client = spotipy.Spotify(auth='BQAwz2uGjkEVZbmeov_LG65oXYX5e916MgRuVBpbAbHA1vmhLamK9Qw2rz4LeJQum82AQEwTxChXLKUI5Hd8cDiKklEaiHIJuOPGCYYnn0ltj_Mlv9OZhNwv-Y1L4aBKxkbcyMReSnP_3hKO-B-xVOCRrg58ayx3yZrTYpZ7G5en45zgOt0xb85VfW8BlZBTpUfCSfKLbWZhywIyaB6snO68X8zwCB1Q64I4KuLEiuuFmy255qlmAAP6dvIa7wjpv8tsCJnfId4')
+    playlist = personal_client.user_playlist_create('duylam.nguyen','tiptone: {0} and {1}'.format(track_two_artist,track_one_artist))
     playlist_tracks = personal_client.user_playlist_add_tracks(user='duylam.nguyen', playlist_id=playlist['id'], tracks=recommendations_ids, position=None)
     return jsonify({'status':'ok','id':playlist['id']})
 
