@@ -1,5 +1,5 @@
 """
-ts_authentication.py
+auth.py
 ~~~~~~~~~~~
 
 description
@@ -75,6 +75,7 @@ class SpotifySignIn(OAuthSignIn):
         self.spotify = spotipy
 
     def authorize(self):
+        print(self.oauth.get_authorize_url())
         return self.oauth.get_authorize_url()
 
     def callback(self):
@@ -82,6 +83,7 @@ class SpotifySignIn(OAuthSignIn):
             print('</3 BLEH </3>')
             return None, None, None
         code = request.args.get('code')
+
         body = self.oauth.get_access_token(code)
         access_token = body['access_token']
         refresh_token = body['refresh_token']

@@ -67,12 +67,31 @@
         });
 
         $('#play-spotify').on('click',function(event){
-            
+            var playlist = [];
+            for (const k of $('#albums div')){
+                playlist.push($(k).attr('id'));
+            }
+
+            $.ajax({
+              async: true,
+              contentType:"application/json",
+              url: '/v3/playlistcreation',
+              dataType: 'json',
+              data: JSON.stringify(playlist),
+              error: function(){
+                alert("Hmm. Something didn't work. Could you try again?");
+              },
+              method: 'post',
+              success: function (response) {
+                  window.open(response['recommendations'])
+              }
+            });
+
         });
 
         function showPlaylist(playlist){
             for (const song of playlist){
-                var _html = '<div id="{}"><img src="{}"/><h6>{} by {}</h6></div>'.format( song['id'], song['album']['images'][0]['url'], song['name'], song['artists'][0]['name']);
+                var _html = '<div id="{}"><img src="{}"/><h6>{} by {}</h6></div>'.format( song['uri'], song['album']['images'][0]['url'], song['name'], song['artists'][0]['name']);
                 $('#albums').append(_html);
                 $('#listen').show();
             }

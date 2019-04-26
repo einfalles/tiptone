@@ -1,7 +1,7 @@
 import spotipy
 import spotipy.oauth2 as oauth
 import datetime
-import auth as tsa
+import auth
 import pprint
 import requests
 from flask import Flask, request, session, redirect, render_template,jsonify
@@ -22,48 +22,15 @@ def index():
     pprint.pprint(session['user']['access_token'])
     return render_template('basic.html')
 
-@app.route('/data', methods=['POST'])
-def data():
-    track_one_artist = request.json[0][0]['value']
-    track_one_track = request.json[0][1]['value']
-    track_two_artist = request.json[1][0]['value']
-    track_two_track = request.json[1][1]['value']
-    sp_token = oauth.SpotifyClientCredentials(client_id='4f8c3338b0b443a8895358db33763c6f',client_secret='76cf6ff10bb041dbb0b11a3e7dd89fe1')
-    spotify_client = spotipy.Spotify(auth=sp_token.get_access_token())
-    results = spotify_client.search(q='artist:'+track_one_artist + ' AND ' + 'track:'+track_one_track, type='track')
-    if len(results['tracks']['items'])>0:
-        data_one = {
-            'sp_uri':results['tracks']['items'][0]['id'],
-            'track': results['tracks']['items'][0]['name'],
-            'artist': results['tracks']['items'][0]['artists'][0]['name']
-        }
-
-    results = spotify_client.search(q='artist:'+track_two_artist + ' AND ' + 'track:'+track_two_track, type='track')
-    if len(results['tracks']['items'])>0:
-        data_two = {
-            'sp_uri':results['tracks']['items'][0]['id'],
-            'track': results['tracks']['items'][0]['name'],
-            'artist': results['tracks']['items'][0]['artists'][0]['name']
-        }
-    recommendations = spotify_client.recommendations(seed_tracks=[data_one['sp_uri'],data_two['sp_uri']],limit=12)
-    recommendations = recommendations['tracks']
-    recommendations_ids = []
-    for i in recommendations:
-        recommendations_ids.append(i['id'])
-    personal_client = spotipy.Spotify(auth='BQAwz2uGjkEVZbmeov_LG65oXYX5e916MgRuVBpbAbHA1vmhLamK9Qw2rz4LeJQum82AQEwTxChXLKUI5Hd8cDiKklEaiHIJuOPGCYYnn0ltj_Mlv9OZhNwv-Y1L4aBKxkbcyMReSnP_3hKO-B-xVOCRrg58ayx3yZrTYpZ7G5en45zgOt0xb85VfW8BlZBTpUfCSfKLbWZhywIyaB6snO68X8zwCB1Q64I4KuLEiuuFmy255qlmAAP6dvIa7wjpv8tsCJnfId4')
-    playlist = personal_client.user_playlist_create('duylam.nguyen','tiptone: {0} and {1}'.format(track_two_artist,track_one_artist))
-    playlist_tracks = personal_client.user_playlist_add_tracks(user='duylam.nguyen', playlist_id=playlist['id'], tracks=recommendations_ids, position=None)
-    return jsonify({'status':'ok','id':playlist['id']})
-
 @app.route('/auth/sp/login')
 def auth_sp_login():
-    oauth = tsa.OAuthSignIn.get_provider("spotify")
+    oauth = auth.OAuthSignIn.get_provider("spotify")
     return redirect(oauth.authorize())
 
 @app.route('/auth/sp/authenticate')
 def auth_sp_authenticate():
-    # d = datetime.datetime.now(pytz.utc)
-    oauth = tsa.OAuthSignIn.get_provider("spotify")
+    auth_code = request.args.get('code')
+    oauth = auth.OAuthSignIn.get_provider("spotify")
     oauth.callback()
     user_email = oauth.results['spotify_user_id']
     user_refresh_token = oauth.results['refresh_token']
@@ -97,13 +64,18 @@ def recommendation_3(src,dest):
 @app.route('/v3/playlistcreation', methods=['POST'])
 def generate_playlist():
     # GET SONG IDS FROM ARRAY
+    songs = request.get_json(silent=True)
 
+    datestring = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     # CREATE PLAYLIST OBJECT
+    personal_client = spotipy.Spotify(auth=session['user']['access_token'])
+    playlist = personal_client.user_playlist_create(user='duylam.nguyen',name='___tiptone___ {}'.format(datestring))
 
     # INSERT SONG IDS INTO PLAYLIST OBJECT
-
+    playlist_tracks = personal_client.user_playlist_add_tracks(user='duylam.nguyen', playlist_id=playlist['id'], tracks=songs, position=None)
+    print(playlist)
     # RETURN PLAYLIST ID
-    return jsonify({'status':'ok','recommendations':recommendations})
+    return jsonify({'status':'ok','recommendations':playlist['external_urls']['spotify']})
 
 if __name__ == "__main__":
     app.run(debug = True)
