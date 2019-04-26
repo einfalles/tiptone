@@ -11,11 +11,7 @@ app.config['DEBUG'] = True
 app.secret_key = 'tiptone'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 604800
 
-
-musimap = {'id':'aqwo4qett8c1s1ah','secret':'9yobvlm1mmnrkrxafysa1oaq28mfjdfi'}
-url = 'https://api.musimap.net/oauth/access_token'
 grant_type = 'client_credentials'
-musimap_data = requests.post(url,data={'grant_type':grant_type,'client_id':musimap['id'],'client_secret':musimap['secret']})
 SPOTIFY_INFO = {
     'id':'4f8c3338b0b443a8895358db33763c6f',
     'secret':'76cf6ff10bb041dbb0b11a3e7dd89fe1'
@@ -24,7 +20,7 @@ SPOTIFY_INFO = {
 def index():
     session.permanent = True
     pprint.pprint(session['user']['access_token'])
-    return render_template('index.html')
+    return render_template('basic.html')
 
 @app.route('/data', methods=['POST'])
 def data():
@@ -49,7 +45,6 @@ def data():
             'track': results['tracks']['items'][0]['name'],
             'artist': results['tracks']['items'][0]['artists'][0]['name']
         }
-    audio = spotify_client.audio_features(tracks=[data_one['sp_uri'],data_two['sp_uri']])
     recommendations = spotify_client.recommendations(seed_tracks=[data_one['sp_uri'],data_two['sp_uri']],limit=12)
     recommendations = recommendations['tracks']
     recommendations_ids = []
@@ -67,7 +62,6 @@ def auth_sp_login():
 
 @app.route('/auth/sp/authenticate')
 def auth_sp_authenticate():
-
     # d = datetime.datetime.now(pytz.utc)
     oauth = tsa.OAuthSignIn.get_provider("spotify")
     oauth.callback()
@@ -83,6 +77,33 @@ def auth_sp_authenticate():
     session['user']['email'] =  user_email
     return jsonify({'status':'ok','sender_playlist':user_email})
 
+@app.route('/v3/recommendation/<src>/<dest>')
+def recommendation_3(src,dest):
+    api_echonest = 'http://frog.playlistmachinery.com:4682/frog/path?src={}&dest={}'.format(src, dest)
+    raw_path = requests.get(api_echonest).json()['raw_path']
+    middle_list = len(raw_path)//2
+    recommendation_seed = raw_path[middle_list]
+
+    # RETRIEVE SPOTIFY TOKENS
+    sp_token = oauth.SpotifyClientCredentials(client_id='4f8c3338b0b443a8895358db33763c6f',client_secret='76cf6ff10bb041dbb0b11a3e7dd89fe1')
+
+    # CREATE SPOTIFY CLIENT
+    spotify_client = spotipy.Spotify(auth=sp_token.get_access_token())
+
+    # GET RECOMMENDATIONS
+    recommendations = spotify_client.recommendations(seed_artists=[recommendation_seed],limit=12)['tracks']
+    return jsonify({'status':'ok','recommendations':recommendations})
+
+@app.route('/v3/playlistcreation', methods=['POST'])
+def generate_playlist():
+    # GET SONG IDS FROM ARRAY
+
+    # CREATE PLAYLIST OBJECT
+
+    # INSERT SONG IDS INTO PLAYLIST OBJECT
+
+    # RETURN PLAYLIST ID
+    return jsonify({'status':'ok','recommendations':recommendations})
 
 if __name__ == "__main__":
     app.run(debug = True)

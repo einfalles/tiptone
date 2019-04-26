@@ -1,0 +1,91 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+    <h1>Tiptone</h1>
+    <div class="recommendation-seed">
+        <input id="rec-source"/>
+        <input id="rec-dest"/>
+        <button id="generate-recs">Blamo</button>
+        <div id="parameters">
+            <label>Energy ⚡️</label>
+            <input type="range" min="1" max="100" value="50" class="slider" id="energy">
+
+            <label>Popularity 🤴</label>
+            <input type="range" min="1" max="100" value="50" class="slider" id="popularity">
+
+            <label>Dancebility 🕺</label>
+            <input type="range" min="1" max="100" value="50" class="slider" id="dancebility">
+        </div>
+    </div>
+    <div id="playlist">
+        <div id="albums">
+        </div>
+        <div id="listen">
+            <button id="play-spotify">Listen Now</button>
+        </div>
+    </div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function(){
+
+        $('#generate-recs').on('click',function(event){
+          event.preventDefault();
+          var source = $("#rec-source").val();
+          var dest = $("#rec-dest").val();
+
+          $.ajax({
+            async: true,
+            contentType:"application/json",
+            url: '/v3/recommendation/' + source + '/' + dest,
+            dataType: 'json',
+            error: function(){
+              alert("Hmm. Something didn't work. Could you try again?");
+            },
+            method: 'get',
+            success: function (response) {
+                var playlist;
+                if (response.status == 'ok'){
+                    playlist = response.recommendations;
+                    console.log(playlist);
+                    showPlaylist(playlist);
+
+                }
+            }
+          });
+        });
+
+        $('#play-spotify').on('click',function(event){
+            
+        });
+
+        function showPlaylist(playlist){
+            for (const song of playlist){
+                var _html = '<div id="{}"><img src="{}"/><h6>{} by {}</h6></div>'.format( song['id'], song['album']['images'][0]['url'], song['name'], song['artists'][0]['name']);
+                $('#albums').append(_html);
+                $('#listen').show();
+            }
+        }
+        String.prototype.format = function () {
+          var i = 0, args = arguments;
+          return this.replace(/{}/g, function () {
+            return typeof args[i] != 'undefined' ? args[i++] : '';
+          });
+        };
+
+
+    });
+</script>
+</body>
+</html>
