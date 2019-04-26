@@ -1,6 +1,7 @@
 import spotipy
 import spotipy.oauth2 as oauth
 import datetime
+import random
 import auth
 import pprint
 import requests
@@ -46,10 +47,12 @@ def auth_sp_authenticate():
 
 @app.route('/v3/recommendation/<src>/<dest>')
 def recommendation_3(src,dest):
+    path_randomization = [1,0,-1]
+    path_deviation = random.choice(path_randomization)
     api_echonest = 'http://frog.playlistmachinery.com:4682/frog/path?src={}&dest={}'.format(src, dest)
     raw_path = requests.get(api_echonest).json()['raw_path']
     middle_list = len(raw_path)//2
-    recommendation_seed = raw_path[middle_list]
+    recommendation_seed = raw_path[middle_list-path_deviation]
 
     # RETRIEVE SPOTIFY TOKENS
     sp_token = oauth.SpotifyClientCredentials(client_id='4f8c3338b0b443a8895358db33763c6f',client_secret='76cf6ff10bb041dbb0b11a3e7dd89fe1')

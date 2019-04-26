@@ -11,12 +11,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
     <link rel="stylesheet" href="/css/main.css">
 </head>
-<body>
+<body class="container">
     <h1>Tiptone</h1>
     <div class="recommendation-seed">
-        <input id="rec-source"/>
-        <input id="rec-dest"/>
-        <button id="generate-recs">Blamo</button>
+        <div id="artist-input">
+            <input id="rec-source" placeholder="This Artist"/>
+            <input id="rec-dest" placeholder="That Artist"/>
+        </div>
         <div id="parameters">
             <label>Energy ⚡️</label>
             <input type="range" min="1" max="100" value="50" class="slider" id="energy">
@@ -27,6 +28,7 @@
             <label>Dancebility 🕺</label>
             <input type="range" min="1" max="100" value="50" class="slider" id="dancebility">
         </div>
+        <button id="generate-recs">Harmonize</button>
     </div>
     <div id="playlist">
         <div id="albums">
@@ -35,16 +37,15 @@
             <button id="play-spotify">Listen Now</button>
         </div>
     </div>
-
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="crossorigin="anonymous"></script>
 <script>
     $(document).ready(function(){
-
+        $('#listen').hide();
         $('#generate-recs').on('click',function(event){
           event.preventDefault();
           var source = $("#rec-source").val();
           var dest = $("#rec-dest").val();
-
+          $('#albums').empty();
           $.ajax({
             async: true,
             contentType:"application/json",
@@ -91,7 +92,7 @@
 
         function showPlaylist(playlist){
             for (const song of playlist){
-                var _html = '<div id="{}"><img src="{}"/><h6>{} by {}</h6></div>'.format( song['uri'], song['album']['images'][0]['url'], song['name'], song['artists'][0]['name']);
+                var _html = '<div class="playlist-song" id="{}"><img src="{}"/><h6>{} by {}</h6></div>'.format( song['uri'], song['album']['images'][0]['url'], song['name'], song['artists'][0]['name']);
                 $('#albums').append(_html);
                 $('#listen').show();
             }

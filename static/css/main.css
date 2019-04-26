@@ -1,1 +1,36 @@
 canvas { width: 100%; height: 100% }
+body.container{
+    max-width: 80vw;
+    margin: 0 auto;
+    font-family: sans-serif;
+}
+input[type=range]{
+    margin-right: 24px;
+}
+#playlist {
+    margin-top:64px;
+    display: flex;
+    flex-direction: column;
+}
+#albums {
+    display: flex;
+    width: 100vw;
+    margin-left: -10vw;
+    overflow-y: scroll;
+}
+.playlist-song {
+    margin-left: 24px;
+}
+.playlist-song img {
+    width: 272px;
+    height: 272px;
+}
+#parameters {
+    margin-top: 24px;
+}
+#generate-recs {
+    margin-top: 24px;
+}
+#listen {
+    margin-top: 40px;
+}
